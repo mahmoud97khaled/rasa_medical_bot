@@ -8,11 +8,16 @@ intents:
   - price_explore
   - benefits_explore
   - prior_authorization
+  - plans_explore
+  - provider_recommendation
+  - plan_benefits_recommendation
   - out_of_scope
 
 entities:
   - member_id
   - benefits
+  - benefits_explore
+  - auth_status
 
 slots:
   member_id:
@@ -25,6 +30,16 @@ slots:
     mappings:
       - type: from_entity
         entity: benefits
+  benefits_explore:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: benefits_explore
+  auth_status:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: auth_status
 
 session_config:
   session_expiration_time: 10
@@ -35,6 +50,9 @@ actions:
   - action_prior_authorization
   - action_price_explore
   - action_benefits_explore
+  - action_plans_explore
+  - action_provider_recommendation
+  - action_plan_benefits_recommendation
   - action_greet
   - action_goodbye
   - action_default_fallback

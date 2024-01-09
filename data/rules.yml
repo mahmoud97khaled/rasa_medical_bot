@@ -26,6 +26,21 @@ rules:
   - intent: prior_authorization
   - action: action_prior_authorization
 
+- rule: plans_explore
+  steps:
+  - intent: plans_explore
+  - action: action_plans_explore
+
+- rule: provider_recommendation
+  steps:
+  - intent: provider_recommendation
+  - action: action_provider_recommendation
+  
+- rule: plan_benefits_recommendation
+  steps:
+  - intent: plan_benefits_recommendation
+  - action: action_plan_benefits_recommendation
+  
 - rule: out_of_scope
   steps:
   - intent: out_of_scope

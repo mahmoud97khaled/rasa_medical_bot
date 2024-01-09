@@ -81,6 +81,9 @@ nlu:
     - what is included in my benefits for [maternity](benefits)?
     - can you provide information about my benefits for [maternity](benefits)?
     - how can I use my benefits for [maternity](benefits)?
+    - are there any [limitations](benefits_explore) on my benefits for fitness
+    - What is my [remaining](benefits_explore) deductible
+    - can you [explain](benefits_explore) my benefits for mri
 
 - intent: prior_authorization
   examples: |
@@ -94,6 +97,33 @@ nlu:
     - I am seeking prior authorization for [maternity](benefits) for member id [123456789](member_id)
     - what is the procedure for prior authorization for [knee replacement surgery](benefits) for member id [123456789](member_id)?
     - I need assistance with prior authorization for [pregnancy](benefits) for member id [123456789](member_id)
+    - I need to get prior authorization for knee replacement surgery for member id
+    - what are the prerequisite to get a prior auth for knee replacement surgery
+    - What is the [status](auth_status) of my prior auth I submitted for member id
+    - Can you tell me the prior auth [status](auth_status) for knee surgery for member id 
+
+- intent: plans_explore
+  examples: |
+    - is there a plan that covers maternity
+    - can i switch to a plan that covers knee surgery
+    - which plans include coverage for maternity
+    - are there any insurance plans that cover knee surgery
+    - I'm looking for a plan that covers knee surgery
+
+- intent: plan_benefits_recommendation
+  examples: |
+    - what is the minimum deductible for a plan that covers maternity
+    - can you provide information on the deductible for a plan that covers maternity
+    - I want to know the minimum deductible for a plan that includes maternity coverage
+    - what are the deductible options for a plan that covers maternity
+    - can you recommend a plan with a low deductible for maternity coverage
+    - I'm interested in a plan that has a low deductible for maternity
+
+- intent: provider_recommendation
+  examples: |
+    - Can you recommend a in-network provider for MRI
+    - Can you recommend a orthopedic surgeon in San Francisco
+    - Can you recommend a orthopedic surgeon in 94108
 
 - intent: out_of_scope
   examples: |
@@ -126,6 +156,29 @@ nlu:
     - Magnetic resonance imaging
     - mri scan
 
+- lookup: benefits_explore
+  examples: |
+    - limit 
+    - limitations
+    - limits
+    - limitaion
+    - limited
+    - calculate
+    - calculates
+    - calculating
+    - calculation
+    - calculations
+    - remain
+    - remaining
+    - explain
+    - explains
+    - explaining
+    - explanation
+    - explanations
+
+- lookup: auth_status
+  examples: |
+    - status
 - synonym: knee replacement surgery
   examples: |
     - knee replacement
@@ -154,3 +207,33 @@ nlu:
     - mri
     - Magnetic resonance imaging
     - mri scan
+
+- synonym: limit
+  examples: |
+    - limitations
+    - limit
+    - limits
+    - limitaion
+    - limited
+
+- synonym: calculate
+  examples: |
+    - calculate
+    - calculates
+    - calculating
+    - calculation
+    - calculations
+    - remain
+    - remaining
+
+- synonym: explain
+  examples: |
+    - explain
+    - explains
+    - explaining
+    - explanation
+    - explanations
+
+- synonym: status
+  examples: |
+    - status

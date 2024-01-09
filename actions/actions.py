@@ -22,7 +22,7 @@ class ActionSessionStart(Action):
             events = [SessionStarted()]
             events.append(ActionExecuted("action_listen"))
             USER_IDS[tracker.sender_id] = tracker.sender_id
-            USER_SESSIONS[USER_IDS[tracker.sender_id]] = {"user_id": tracker.sender_id, "session_id": tracker.sender_id}
+            USER_SESSIONS[USER_IDS[tracker.sender_id]] = {"user_id": tracker.sender_id, "session_id": tracker.sender_id, "status": False}
             
             print("USER_IDS: ", USER_IDS), print("USER_SESSIONS: ", USER_SESSIONS)
 
@@ -38,8 +38,12 @@ class ActionPriorAuthorization(Action):
                 domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
             
             entities = tracker.latest_message['entities']
-            flag_member_id = False
             print("entities: ", entities)
+            
+            intent = tracker.latest_message['intent'].get('name')
+            print("intent: ", intent)
+            
+            flag_member_id = False
             for i in entities:
                 if i['entity'] == 'member_id':
                     print("member_id: ", i['value'])
@@ -47,9 +51,21 @@ class ActionPriorAuthorization(Action):
                     flag_member_id = True
                     validated_message  = member_id_validator.validate(member_id)
                     dispatcher.utter_message(text=validated_message)
+                    dispatcher.utter_custom_json({"action": "PriorAuthRequirements"})
                     
             if flag_member_id == False:
-                dispatcher.utter_message(text=generate_message()["prior_authorization_not_found"])                  
+                dispatcher.utter_message(text=generate_message()["prior_authorization_not_found"])
+                for i in entities:
+                    if i['entity'] == 'auth_status':
+                        print("auth_status: ", i['value'])
+                        USER_SESSIONS[USER_IDS[tracker.sender_id]]['status'] = True
+            else:
+                for i in entities:
+                    if i['entity'] == 'auth_status' or USER_SESSIONS[USER_IDS[tracker.sender_id]]['status'] == True:
+                        print("auth_status: ", i['value'])
+                        USER_SESSIONS[USER_IDS[tracker.sender_id]]['status'] = False
+                        dispatcher.utter_custom_json({"action": "PriorAuthStatus"})
+                        break
             return []
     
 class ActionPriceExplore(Action):
@@ -63,12 +79,16 @@ class ActionPriceExplore(Action):
             
             entities = tracker.latest_message['entities']
             print("entities: ", entities)
-
+            
+            intent = tracker.latest_message['intent'].get('name')
+            print("intent: ", intent)
+            
             for i in entities:
                 if i['entity'] == 'benefits':
                     print("benefits: ", i['value'])
                     benefits = i['value']
                     dispatcher.utter_message(text=generate_message(benefits = benefits)["price_explore"])
+                    dispatcher.utter_custom_json({"action": "PriceExplore", "benefits": benefits})
                 else:
                     dispatcher.utter_message(text=generate_message()["benefits_not_found"])
             return []
@@ -85,15 +105,78 @@ class ActionBenefitsExplore(Action):
             entities = tracker.latest_message['entities']
             flag_benefits = False
             print("entities: ", entities)
-
+            
+            intent = tracker.latest_message['intent'].get('name')
+            print("intent: ", intent)
+            
             for i in entities:
                 if i['entity'] == 'benefits':
                     benefits = i['value']
-                    flag_benefits = True
-                    dispatcher.utter_message(text=generate_message(benefits = benefits)["benefits"])
+                    # flag_benefits = True
+                    # dispatcher.utter_message(text=generate_message(benefits = benefits)["benefits"])
+                    dispatcher.utter_custom_json({"benefits": benefits})
             
-            if flag_benefits == False or len(entities) == 0:
-                dispatcher.utter_message(text=generate_message()["benefits_not_found"])
+            # if flag_benefits == False or len(entities) == 0:
+            #     dispatcher.utter_message(text=generate_message()["benefits_not_found"])
+            # else:
+            for i in entities:
+                if i['entity'] == 'benefits_explore':
+                    if i['value'] == 'limit':
+                        dispatcher.utter_custom_json({"action": "BenefitValidation"})
+                        dispatcher.utter_custom_json({"action": "BenefitLimitation"})
+                    elif i['value'] == 'calculate':
+                        dispatcher.utter_custom_json({"action": "BenefitValidation"})
+                        dispatcher.utter_custom_json({"action": "BenefitCalculation"})
+                    elif i['value'] == 'explain':
+                        dispatcher.utter_custom_json({"action": "BenefitValidation"})
+                        dispatcher.utter_custom_json({"action": "BenefitExplanation"})
+                    else:
+                        dispatcher.utter_custom_json({"action": "BenefitValidation"})
+            return []
+
+class ActionPlansExplore(Action):
+                
+        def name(self) -> Text:
+            return "action_plans_explore"
+        
+        def run(self, dispatcher: CollectingDispatcher,
+                tracker: Tracker,
+                domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+            intent = tracker.latest_message['intent'].get('name')
+            print("intent: ", intent)
+            
+            dispatcher.utter_custom_json({"action": "PlanBenefitsExplore"})
+             
+            return []
+
+class ActionPlanBenefitsRecommendation(Action):
+                                
+        def name(self) -> Text:
+            return "action_plan_benefits_recommendation"
+        
+        def run(self, dispatcher: CollectingDispatcher,
+                tracker: Tracker,
+                domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+            intent = tracker.latest_message['intent'].get('name')
+            print("intent: ", intent)
+            
+            dispatcher.utter_custom_json({"action": "PlanBenefitsRecommendation"})
+            
+            return []  
+         
+class ActionProviderRecommendation(Action):
+                    
+        def name(self) -> Text:
+            return "action_provider_recommendation"
+        
+        def run(self, dispatcher: CollectingDispatcher,
+                tracker: Tracker,
+                domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+            intent = tracker.latest_message['intent'].get('name')
+            print("intent: ", intent)
+            
+            dispatcher.utter_custom_json({"action": "ProviderRecommendation"})
+            
             return []
 
 class ActionGreet(Action):
